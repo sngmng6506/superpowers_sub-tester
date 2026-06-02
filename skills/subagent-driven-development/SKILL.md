@@ -86,16 +86,24 @@ digraph process {
 }
 ```
 
-## Model Selection 
-
+## Model Selection & Split-Tester Architecture
 
 1. **Implementation Phase (Main Agent)**:
-   - For writing core code, initial feature development, and architectural design, you should rely on the primary high-capability model (e.g., Claude 3 Opus) to ensure maximum code quality and logical reasoning.
+   - For writing core code, initial feature development, and architectural design, you should rely on the primary high-capability model to ensure maximum code quality and logical reasoning.
 
-2. **Testing & Review Phase (User-Approved Subagent)**:
-   - Before spawning any subagent for testing, TDD loops, or code reviews (such as the Spec Reviewer or Code Quality Reviewer), you MUST read the `.superpowers_state.json` file in the project root.
-   - If the `current_test_model` value exists in that file, you MUST strictly force that specific model (e.g., `claude-3-5-haiku-latest`) to execute all subsequent testing, error analysis, and review iterations.
-   - Under no circumstances should you escalate or change this test/review model back to a higher-tier model based on your own judgment.
+2. **Testing & Review Phase (User-Approved Subagent & Interceptor)**:
+   - Before executing any bash commands related to testing (e.g., `npm test`, `jest`, `vitest`) or spawning subagents for TDD loops, the hardware-level interceptor will halt the process and prompt the user for approval (`y/n`).
+   
+   - **If the user approves (`y`)**: You MUST read the `.superpowers_state.json` file in the project root. If the `current_test_model` value exists, you MUST strictly force that specific model (e.g., `claude-3-5-haiku-latest`) to execute all subsequent testing, error analysis, and review iterations. Under no circumstances should you escalate this model back to a higher tier based on your own judgment.
+   
+   - **If the user defers (`n`)**: The test execution will be skipped immediately, and the command will be automatically logged into `.deferred_tests.txt`. You must recognize that the test has been deferred, gracefully skip the testing context, and proceed with the next implementation tasks.
+
+3. **Deferred Test Management Commands**:
+   You must recognize and support the following custom slash commands when requested by the user or when managing the deferred test queue:
+   - `/set-testmodel <model_name>`: Updates the target budget subagent model in `.superpowers_state.json`.
+   - `/list-deferred`: Displays the current list of skipped/deferred test commands stored in `.deferred_tests.txt`.
+   - `/run-deferred`: Executes all accumulated deferred tests sequentially in a batch process and clears the log file.
+   - 
 
    
 ## Handling Implementer Status
