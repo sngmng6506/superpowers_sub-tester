@@ -14,20 +14,20 @@
 4. y를 입력하면 이후의 에러 수정 및 반복 검수 루프가 설정한 <모델 명>으로 강제 전환되어 실행됨. n을 입력하면 테스트 실행이 생략되며 해당 명령어가 .deferred_tests.txt 파일에 누적 기록됨.
 5. 미뤄진 테스트 목록은 /list-deferred 명령어로 확인하고, 누적된 테스트들은 /run-deferred 명령어로 순차적 일괄 수행이 가능함.
 
-### 📦 로컬 경로 직접 설치 (가장 확실하고 추천하는 방법)
+### 로컬 경로 직접 설치 방법
 
 
-**1. 저장소 클론 (다운로드)**
+**저장소 클론 (다운로드)**
 터미널을 열고 플러그인을 보관할 폴더로 이동한 뒤, 아래 명령어를 입력하여 코드를 다운로드
 
 git clone [https://github.com/sngmng6506/superpowers_sub-tester.git](https://github.com/sngmng6506/superpowers_sub-tester.git)
 
-Mac/Linux OS
-**예시 경로** 
+**Mac/Linux OS**
+*예시 경로*
 /plugin install /Users/사용자이름/경로/superpowers_sub-tester
 
-Windows OS
-**예시 경로**
+**Windows OS**
+*예시 경로*
 /plugin install C:\경로\superpowers_sub-tester
 
 
