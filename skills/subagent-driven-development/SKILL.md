@@ -88,10 +88,14 @@ digraph process {
 
 ## Model Selection 
 
-1. Before spawning any subagent (e.g., Implementer, Reviewer, etc.), you MUST read the `.superpowers_state.json` file located in the project root.
-2. If the `current_test_model` value exists in the file, you MUST strictly use that specific model name as the `model` parameter when calling the tool to spawn the subagent.
-3. If the file does not exist, is empty, or an error occurs while reading it, use `claude-3-5-haiku-latest` as the fallback default model.
-4. Under no circumstances should you alter or upgrade the subagent's model based on your own arbitrary judgment.
+
+1. **Implementation Phase (Main Agent)**:
+   - For writing core code, initial feature development, and architectural design, you should rely on the primary high-capability model (e.g., Claude 3 Opus) to ensure maximum code quality and logical reasoning.
+
+2. **Testing & Review Phase (User-Approved Subagent)**:
+   - Before spawning any subagent for testing, TDD loops, or code reviews (such as the Spec Reviewer or Code Quality Reviewer), you MUST read the `.superpowers_state.json` file in the project root.
+   - If the `current_test_model` value exists in that file, you MUST strictly force that specific model (e.g., `claude-3-5-haiku-latest`) to execute all subsequent testing, error analysis, and review iterations.
+   - Under no circumstances should you escalate or change this test/review model back to a higher-tier model based on your own judgment.
 
    
 ## Handling Implementer Status
