@@ -1,5 +1,6 @@
 const fs = require('fs');
 const readline = require('readline');
+const os = require('os');
 
 let inputData = '';
 process.stdin.on('data', (chunk) => { inputData += chunk; });
@@ -8,18 +9,20 @@ process.stdin.on('end', () => {
   try {
     const event = JSON.parse(inputData);
     
-    // AI가 bash 명령어를 실행하려고 할 때 가로채기
+    // AI가 bash 명령어를 실행하려고 할 때
     if (event.tool === 'bash' && event.arguments && event.arguments.command) {
       const command = event.arguments.command.toLowerCase();
 
-      // 실행하려는 명령어에 테스트 관련 키워드가 포함되어 있는지 검사
+      // 테스트 관련 키워드가 포함되어 있는지 검사
       if (command.includes('test') || command.includes('jest') || command.includes('vitest')) {
         
-        // 터미널과 직접 연결하여 물리적인 사용자 입력을 받음
-        // (파이프라인 환경에서도 터미널 입출력을 보장하기 위한 세팅)
+        // 💡 핵심: 윈도우인지 맥/리눅스인지 감지하여 터미널 경로 자동 설정
+        const isWindows = os.platform() === 'win32';
+        const ttyPath = isWindows ? '\\\\.\\CON' : '/dev/tty';
+
         const rl = readline.createInterface({
-          input: fs.createReadStream('/dev/tty'),
-          output: fs.createWriteStream('/dev/tty'),
+          input: fs.createReadStream(ttyPath),
+          output: fs.createWriteStream(ttyPath),
           terminal: true
         });
 
@@ -35,7 +38,6 @@ process.stdin.on('end', () => {
           }
         });
         
-        // question 콜백 대기를 위해 여기서 return 처리
         return;
       }
     }
@@ -43,6 +45,5 @@ process.stdin.on('end', () => {
     process.exit(0);
   }
   
-  // 조건에 맞지 않는 명령어는 조용히 통과
   process.exit(0);
 });
