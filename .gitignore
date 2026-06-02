@@ -5,3 +5,5 @@
 node_modules/
 inspo
 triage/
+# AI TDD 미뤄진 테스트 목록 파일 제외
+.deferred_tests.txt
