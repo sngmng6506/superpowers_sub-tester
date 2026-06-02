@@ -24,12 +24,10 @@ git clone [https://github.com/sngmng6506/superpowers_sub-tester.git](https://git
 
 **Mac/Linux OS**
 
-*예시 경로*
 /plugin install /Users/사용자이름/경로/superpowers_sub-tester
 
 **Windows OS**
 
-*예시 경로*
 /plugin install C:\경로\superpowers_sub-tester
 
 
