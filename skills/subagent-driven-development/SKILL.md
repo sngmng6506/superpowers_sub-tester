@@ -86,21 +86,14 @@ digraph process {
 }
 ```
 
-## Model Selection
+## Model Selection 
 
-Use the least powerful model that can handle each role to conserve cost and increase speed.
+1. Before spawning any subagent (e.g., Implementer, Reviewer, etc.), you MUST read the `.superpowers_state.json` file located in the project root.
+2. If the `current_test_model` value exists in the file, you MUST strictly use that specific model name as the `model` parameter when calling the tool to spawn the subagent.
+3. If the file does not exist, is empty, or an error occurs while reading it, use `claude-3-5-haiku-latest` as the fallback default model.
+4. Under no circumstances should you alter or upgrade the subagent's model based on your own arbitrary judgment.
 
-**Mechanical implementation tasks** (isolated functions, clear specs, 1-2 files): use a fast, cheap model. Most implementation tasks are mechanical when the plan is well-specified.
-
-**Integration and judgment tasks** (multi-file coordination, pattern matching, debugging): use a standard model.
-
-**Architecture, design, and review tasks**: use the most capable available model.
-
-**Task complexity signals:**
-- Touches 1-2 files with a complete spec → cheap model
-- Touches multiple files with integration concerns → standard model
-- Requires design judgment or broad codebase understanding → most capable model
-
+   
 ## Handling Implementer Status
 
 Implementer subagents report one of four statuses. Handle each appropriately:
