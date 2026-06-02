@@ -15,26 +15,46 @@ rl.on('close', () => {
     const event = JSON.parse(inputData);
     const prompt = event.prompt.trim();
 
-    // 사용자가 입력한 문자열이 /set-model로 시작하는지 '기능적'으로 검사
-    if (prompt.startsWith('/set-model ')) {
-      const modelName = prompt.replace('/set-model ', '').trim();
+    // 1. 사용자가 입력한 명령어가 /set-testmodel로 시작하는지 검사
+    if (prompt.startsWith('/set-testmodel ')) {
+      const userInput = prompt.replace('/set-testmodel ', '').trim().toLowerCase();
       
-      let fullModelName = 'claude-3-haiku-20240307'; // 기본값
-      if (modelName === 'sonnet') fullModelName = 'claude-3-5-sonnet-latest';
-      if (modelName === 'opus') fullModelName = 'claude-3-opus-20240229';
+      let fullModelName = '';
 
-      // 1. AI 컨텍스트가 아닌, 로컬 상태 파일에 모델명 물리적 저장 (기능적 변경)
+      // 2. 입력값에 따라 안트로픽 최신 릴리즈 버전 모델명으로 자동 매핑
+      switch (userInput) {
+        case 'haiku':
+          fullModelName = 'claude-3-5-haiku-latest'; // 최신 3.5 하이쿠
+          break;
+        case 'sonnet':
+          fullModelName = 'claude-3-5-sonnet-latest'; // 최신 3.5 소네트
+          break;
+        case 'opus':
+          fullModelName = 'claude-3-opus-latest'; // 최신 오푸스
+          break;
+        default:
+          // 사용자가 쌩 모델명을 다 적었을 경우 (예: claude-3-5-sonnet-20241022) 그대로 허용
+          if (userInput.startsWith('claude-')) {
+            fullModelName = userInput;
+          } else {
+            console.error(`\n❌ [Superpowers] 알 수 없는 모델명입니다. (haiku, sonnet, opus 중 선택해주세요)\n`);
+            process.exit(2);
+          }
+      }
+
+      // 3. 파일 시스템에 물리적으로 상태 저장
       fs.writeFileSync('.superpowers_state.json', JSON.stringify({ current_subagent_model: fullModelName }));
 
-      // 2. 터미널에 성공 메시지 출력 (출력 스트림 제어)
-      console.error(`\n⚙️ [Superpowers] 하청 모델이 [${fullModelName}]으로 기능적 고정되었습니다.\n`);
+      // 4. UI 터미널 메시지 출력
+      console.error(`\n⚙️ [Superpowers] 백그라운드 테스트 모델이 [${fullModelName}]으로 설정되었습니다.\n`);
 
-      // 3. ★핵심★ Exit Code 2를 반환하여 AI(LLM) 호출을 완전히 취소하고 턴을 종료함
+      // 5. LLM(AI) 호출을 취소하고 즉시 턴 종료
       process.exit(2);
     }
   } catch (e) {
     process.exit(0);
   }
-  // /set-model 명령어가 아니면 아무 일 없었다는 듯 정상 진행 (AI에게 문장 전달)
+  
+  // 명령어가 아니면 정상 진행
   process.exit(0);
 });
